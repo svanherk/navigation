@@ -83,6 +83,8 @@ class VisualDiff {
 					if (this._hasTestFailures) {
 						process.env['FAILED_REPORTS'] = process.env['FAILED_REPORTS'] + `${this._fs.getCurrentBaseUrl()}${reportName},`;
 						process.stdout.write(process.env['FAILED_REPORTS']);
+					} else {
+						process.stdout.write('something went wrong');
 					}
 				} else {
 					process.stdout.write(`\n${chalk.yellow('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
@@ -133,6 +135,7 @@ class VisualDiff {
 
 		if (updateGolden) {
 			this._hasTestFailures = true;
+			process.stdout.write('this._hasTestFailures = true');
 			const result = await this._fs.updateGolden(name);
 			if (result) {
 				this._updateError = false;
