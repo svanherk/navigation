@@ -163,6 +163,12 @@ class FileHelper {
 		return true;
 	}
 
+	async writeConfigFile(name, content) {
+		if (!name || name.length === 0 || !content || content.length === 0) return;
+		const filePath = this.getCurrentPath(name);
+		fs.writeFileSync(name, content);
+	}
+
 	async writeCurrentStream(name, stream) {
 		const filePath = this.getCurrentPath(name);
 		const writeStream = () => {
