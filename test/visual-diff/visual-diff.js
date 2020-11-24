@@ -81,10 +81,8 @@ class VisualDiff {
 				if (_isCI) {
 					process.stdout.write(`\n${chalk.yellow('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
 					if (this._hasTestFailures) {
-						process.env['FAILED_REPORTS'] = process.env['FAILED_REPORTS'] + `${this._fs.getCurrentBaseUrl()}${reportName},`;
+						process.env['FAILED_REPORTS'] = process.env['FAILED_REPORTS'] ? process.env['FAILED_REPORTS'] + `,${this._fs.getCurrentBaseUrl()}${reportName}` : `${this._fs.getCurrentBaseUrl()}${reportName}`;
 						process.stdout.write(process.env['FAILED_REPORTS']);
-					} else {
-						process.stdout.write('something went wrong');
 					}
 				} else {
 					process.stdout.write(`\n${chalk.yellow('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
@@ -135,7 +133,6 @@ class VisualDiff {
 
 		if (updateGolden) {
 			this._hasTestFailures = true;
-			process.stdout.write('this._hasTestFailures = true');
 			const result = await this._fs.updateGolden(name);
 			if (result) {
 				this._updateError = false;
