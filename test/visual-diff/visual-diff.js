@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const pixelmatch = require('pixelmatch');
 const PNG = require('pngjs').PNG;
 const FileHelper = require('./file-helper.js');
+const fs = require('fs');
 
 const _isCI = process.env['CI'] ? true : false;
 const _serverOptions = esDevServer.createConfig({ babel: true, nodeResolve: true, dedupe: true });
@@ -23,9 +24,8 @@ before(async() => {
 });
 
 after(async() => {
-	if (_failedReportLinks) {
-		const fh = new FileHelper();
-		fh.writeConfigFile('failed-reports.txt', _failedReportLinks);
+	if (_isCI && _failedReportLinks) {
+		fs.writeFileSync('failed-reports.txt', _failedReportLinks);
 	}
 	if (_server) {
 		await _server.close();
