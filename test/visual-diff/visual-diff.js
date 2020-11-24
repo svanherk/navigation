@@ -4,6 +4,7 @@ const expect = require('chai').expect;
 const pixelmatch = require('pixelmatch');
 const PNG = require('pngjs').PNG;
 const FileHelper = require('./file-helper.js');
+const fs = require('fs');
 
 const _isCI = process.env['CI'] ? true : false;
 const _serverOptions = esDevServer.createConfig({ babel: true, nodeResolve: true, dedupe: true });
@@ -12,6 +13,7 @@ let _baseUrl;
 let _server;
 let _goldenUpdateCount = 0;
 let _goldenErrorCount = 0;
+let _failedReportLinks;
 
 before(async() => {
 	const { server } = await esDevServer.startServer(_serverOptions);
@@ -22,6 +24,9 @@ before(async() => {
 });
 
 after(async() => {
+	if (_isCI && _failedReportLinks) {
+		fs.writeFileSync('failed-reports.txt', _failedReportLinks);
+	}
 	if (_server) {
 		await _server.close();
 		process.stdout.write('Stopped server.\n');
@@ -43,6 +48,7 @@ class VisualDiff {
 		this.resetFocus = require('./helpers/resetFocus');
 
 		this._results = [];
+		this._hasTestFailures = false;
 		this._fs = new FileHelper(name, `${dir ? dir : process.cwd()}/screenshots`, options ? options.upload : null, _isCI);
 		this._dpr = options && options.dpr ? options.dpr : 2;
 		this._tolerance = options && options.tolerance ? options.tolerance : 0;
@@ -78,9 +84,12 @@ class VisualDiff {
 			try {
 				await this._generateHtml(reportName, this._results);
 				if (_isCI) {
-					process.stdout.write(`\n${chalk.blue('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
+					process.stdout.write(`\n${chalk.yellow('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
+					if (this._hasTestFailures) {
+						_failedReportLinks = _failedReportLinks ? _failedReportLinks + `,${this._fs.getCurrentBaseUrl()}${reportName}` : `${this._fs.getCurrentBaseUrl()}${reportName}`;
+					}
 				} else {
-					process.stdout.write(`\n${chalk.blue('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
+					process.stdout.write(`\n${chalk.yellow('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
 				}
 			} catch (error) {
 				process.stdout.write(`\n${chalk.red(`Could not generate report: ${error}`)}`);
@@ -127,6 +136,7 @@ class VisualDiff {
 		}
 
 		if (updateGolden) {
+			this._hasTestFailures = true;
 			const result = await this._fs.updateGolden(name);
 			if (result) {
 				this._updateError = false;
@@ -158,9 +168,6 @@ class VisualDiff {
 
 		const currentFiles = this._fs.getCurrentFiles();
 		const goldenFiles = await this._fs.getGoldenFiles();
-
-		process.stdout.write(currentFiles);
-		process.stdout.write(goldenFiles);
 
 		for (let i = 0; i < goldenFiles.length; i++) {
 			const fileName = goldenFiles[i];
