@@ -12,6 +12,7 @@ let _baseUrl;
 let _server;
 let _goldenUpdateCount = 0;
 let _goldenErrorCount = 0;
+let _failedReportLinks;
 
 before(async() => {
 	const { server } = await esDevServer.startServer(_serverOptions);
@@ -22,6 +23,10 @@ before(async() => {
 });
 
 after(async() => {
+	if (_failedReportLinks) {
+		const fh = new FileHelper();
+		fh.writeConfigFile('failed-reports.txt', _failedReportLinks);
+	}
 	if (_server) {
 		await _server.close();
 		process.stdout.write('Stopped server.\n');
@@ -81,9 +86,7 @@ class VisualDiff {
 				if (_isCI) {
 					process.stdout.write(`\n${chalk.yellow('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
 					if (this._hasTestFailures) {
-						process.env['FAILED_REPORTS'] = process.env['FAILED_REPORTS'] ? process.env['FAILED_REPORTS'] + `,${this._fs.getCurrentBaseUrl()}${reportName}` : `${this._fs.getCurrentBaseUrl()}${reportName}`;
-						process.stdout.write(process.env['FAILED_REPORTS']);
-						this._fs.writeConfigFile('failed-reports.txt', process.env['FAILED_REPORTS']);
+						_failedReportLinks = _failedReportLinks ? _failedReportLinks + `,${this._fs.getCurrentBaseUrl()}${reportName}` : `${this._fs.getCurrentBaseUrl()}${reportName}`;
 					}
 				} else {
 					process.stdout.write(`\n${chalk.yellow('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
