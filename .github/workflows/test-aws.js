@@ -46,7 +46,7 @@ const getBucketContents = async () => {
 process.stdout.write('starting');
 
 getBucketContents().then((results) => {
-    process.stdout.write(results.data.Contents);
+    process.stdout.write(results.toString());
 }).catch((err) => {
     process.stdout.write(err.toString());
 });
