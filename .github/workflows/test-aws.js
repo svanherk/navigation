@@ -24,7 +24,12 @@ const getBucketCreds = async () => {
 }
 
 const getBucketContents = async () => {
-    const s3Config = await getBucketCreds();
+    let s3Config = {};
+    try {
+        s3Config = await getBucketCreds();
+    } catch(e) {
+        process.stdout.write(e);
+    }
     s3Config.apiVersion = 'latest';
     s3Config.region = 'ca-central-1';
 
