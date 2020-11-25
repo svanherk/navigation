@@ -1,6 +1,4 @@
 const AWS = require('aws-sdk');
-const fs = require('fs');
-const path = require('path');
 
 const getBucketCreds = async () => {
     return new Promise((resolve, reject) => {
@@ -11,8 +9,12 @@ const getBucketCreds = async () => {
         };
         const sts = new AWS.STS();
         sts.assumeRole(params, (err, data) => {
-        if (err) reject(err);
+        if (err) {
+            process.stdout.write(err.toString());
+            reject(err)
+        }
         else {
+            process.stdout.write('we did it');
             resolve({
             accessKeyId: data.Credentials.AccessKeyId,
             secretAccessKey: data.Credentials.SecretAccessKey,
@@ -26,6 +28,7 @@ const getBucketCreds = async () => {
 const getBucketContents = async () => {
     let s3Config = {};
     try {
+        process.stdout.write('trying to get s3config');
         s3Config = await getBucketCreds();
     } catch(e) {
         process.stdout.write(e);
@@ -40,8 +43,10 @@ const getBucketContents = async () => {
 
 }
 
+process.stdout.write('starting');
+
 getBucketContents().then((results) => {
     process.stdout.write(results.data.Contents);
 }).catch((err) => {
-    process.stdout.write(err);
+    process.stdout.write(err.toString());
 });
