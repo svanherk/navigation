@@ -84,12 +84,12 @@ class VisualDiff {
 			try {
 				await this._generateHtml(reportName, this._results);
 				if (_isCI) {
-					process.stdout.write(`\n${chalk.yellow('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
+					process.stdout.write(`\n${chalk.gray('Results:')} ${this._fs.getCurrentBaseUrl()}${reportName}\n`);
 					if (this._hasTestFailures) {
 						_failedReportLinks = _failedReportLinks ? _failedReportLinks + `,${this._fs.getCurrentBaseUrl()}${reportName}` : `${this._fs.getCurrentBaseUrl()}${reportName}`;
 					}
 				} else {
-					process.stdout.write(`\n${chalk.yellow('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
+					process.stdout.write(`\n${chalk.gray('Results:')} ${_baseUrl}${currentTarget}/${reportName}\n`);
 				}
 			} catch (error) {
 				process.stdout.write(`\n${chalk.red(`Could not generate report: ${error}`)}`);
