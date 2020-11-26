@@ -42,7 +42,7 @@ class S3Helper {
 		return `https://s3.ca-central-1.amazonaws.com/${this.target}/`;
 	}
 
-	uploadFile(filePath) {
+	async uploadFile(filePath) {
 		const promise = new Promise((resolve, reject) => {
 
 			const getContentType = (filePath) => {
