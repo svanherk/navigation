@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const repo = process.env['GITHUB_REPOSITORY'];
-let _s3Config = {};
+let _s3Config;
 
 async function getS3Creds() {
     return new Promise((resolve, reject) => {
@@ -32,23 +32,25 @@ async function getS3Creds() {
     });
 }
 
-getS3Creds().then((creds) => {
-    _s3Config = creds;
-    _s3Config.apiVersion = 'latest';
-    _s3Config.region = 'ca-central-1';
-}).catch((err) => {
-    process.stdout.write(`\n${chalk.red(err.toString())}`);
-});
-
 class S3Helper {
 
 	constructor(name) {
+		if(!_s3Config) {
+			try {
+				console.log('getting creds');
+				_s3Config = await getS3Creds();
+				_s3Config.apiVersion = 'latest';
+				_s3Config.region = 'ca-central-1';
+			} catch(err) {
+				process.stdout.write(`\n${chalk.red(err.toString())}`);
+			}	
+		}
 		this.currentConfig = Object.assign({}, _s3Config, { target: `visualdiff.gaudi.d2l/screenshots/${repo}/${name}` });
-		console.log('hmm', JSON.stringify(this.currentConfig));
+		console.log('hmm', this.currentConfig.region);
 	}
 
 	getCurrentBaseUrl() {
-		console.log('what the', JSON.stringify(this.currentConfig));
+		console.log('what the', this.currentConfig.region);
 		return `https://s3.${this.currentConfig.region}.amazonaws.com/${this.currentConfig.target}/`;
 	}
 
