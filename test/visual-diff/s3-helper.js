@@ -33,7 +33,6 @@ async function getS3Creds() {
 }
 
 getS3Creds().then((creds) => {
-	process.stdout.write('we did it');
     _s3Config = creds;
     _s3Config.apiVersion = 'latest';
     _s3Config.region = 'ca-central-1';
@@ -45,9 +44,11 @@ class S3Helper {
 
 	constructor(name) {
 		this.currentConfig = Object.assign({}, _s3Config, { target: `visualdiff.gaudi.d2l/screenshots/${repo}/${name}` });
+		console.log('hmm', JSON.stringify(this.currentConfig));
 	}
 
 	getCurrentBaseUrl() {
+		console.log('what the', JSON.stringify(this.currentConfig));
 		return `https://s3.${this.currentConfig.region}.amazonaws.com/${this.currentConfig.target}/`;
 	}
 
