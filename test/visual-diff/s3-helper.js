@@ -9,9 +9,10 @@ let _s3Config = {};
 async function getS3Creds() {
     return new Promise((resolve, reject) => {
         const timestamp = (new Date()).getTime();
+		const formattedRepo = repo.replace(/\//g, '-');
         const params = {
         	RoleArn: 'arn:aws:iam::661160317623:role/githubactions-visual-diff-testing',
-        	RoleSessionName: `${repo}-visual-diff-${timestamp}`
+        	RoleSessionName: `${formattedRepo}-visual-diff-${timestamp}`
 		};
 		console.log(params.RoleSessionName);
         const sts = new AWS.STS();
