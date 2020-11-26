@@ -35,23 +35,11 @@ async function getS3Creds() {
 class S3Helper {
 
 	constructor(name) {
-		if(!_s3Config) {
-			try {
-				console.log('getting creds');
-				_s3Config = await getS3Creds();
-				_s3Config.apiVersion = 'latest';
-				_s3Config.region = 'ca-central-1';
-			} catch(err) {
-				process.stdout.write(`\n${chalk.red(err.toString())}`);
-			}	
-		}
-		this.currentConfig = Object.assign({}, _s3Config, { target: `visualdiff.gaudi.d2l/screenshots/${repo}/${name}` });
-		console.log('hmm', this.currentConfig.region);
+		this.target = `visualdiff.gaudi.d2l/screenshots/${repo}/${name}`;
 	}
 
 	getCurrentBaseUrl() {
-		console.log('what the', this.currentConfig.region);
-		return `https://s3.${this.currentConfig.region}.amazonaws.com/${this.currentConfig.target}/`;
+		return `https://s3.ca-central-1.amazonaws.com/${this.target}/`;
 	}
 
 	uploadFile(filePath) {
@@ -62,13 +50,24 @@ class S3Helper {
 				if (filePath.endsWith('.png')) return 'image/png';
 				return;
 			};
-			
-			const s3 = new AWS.S3(this.currentConfig);
+
+			if(!_s3Config) {
+				try {
+					console.log('getting creds');
+					_s3Config = await getS3Creds();
+					_s3Config.apiVersion = 'latest';
+					_s3Config.region = 'ca-central-1';
+				} catch(err) {
+					process.stdout.write(`\n${chalk.red(err.toString())}`);
+				}	
+			}
+			console.log('creating s3');
+			const s3 = new AWS.S3(_s3Config);
 				
 			const params = {
 				ACL: 'public-read',
 				Body: '',
-				Bucket: this.currentConfig.target,
+				Bucket: this.target,
 				ContentDisposition: 'inline',
 				ContentType: getContentType(filePath),
 				Key: ''
