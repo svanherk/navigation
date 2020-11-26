@@ -37,7 +37,7 @@ const getBucketContents = async () => {
     s3Config.region = 'ca-central-1';
 
     const s3 = new AWS.S3(s3Config);
-    return s3.listObjects({
+    return await s3.listObjects({
         bucket: 'visualdiff.gaudi.d2l'
     });
 
@@ -46,7 +46,7 @@ const getBucketContents = async () => {
 process.stdout.write('starting');
 
 getBucketContents().then((results) => {
-    process.stdout.write(JSON.stringify(results));
+    process.stdout.write(results.Body.toString());
 }).catch((err) => {
     process.stdout.write(err.toString());
 });
