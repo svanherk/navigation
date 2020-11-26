@@ -37,11 +37,10 @@ const getBucketContents = async () => {
     s3Config.region = 'ca-central-1';
 
     const s3 = new AWS.S3(s3Config);
-    let result;
     
     process.stdout.write('trying to list objects');
     return new Promise((resolve, reject) => {
-        s3.listObjects({ bucket: 'visualdiff.gaudi.d2l' }, (err, data) => {
+        s3.listObjects({ Bucket: 'visualdiff.gaudi.d2l' }, (err, data) => {
             if (err) {
                 process.stdout.write(err.toString());
                 reject(err)
