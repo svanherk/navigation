@@ -43,7 +43,7 @@ class S3Helper {
 	}
 
 	async uploadFile(filePath) {
-		const promise = new Promise((resolve, reject) => {
+		const promise = new Promise(async(resolve, reject) => {
 
 			const getContentType = (filePath) => {
 				if (filePath.endsWith('.html')) return 'text/html';
