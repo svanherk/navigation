@@ -49,7 +49,7 @@ class VisualDiff {
 
 		this._results = [];
 		this._hasTestFailures = false;
-		this._fs = new FileHelper(name, `${dir ? dir : process.cwd()}/screenshots`, options ? options.upload : null, _isCI);
+		this._fs = new FileHelper(name, `${dir ? dir : process.cwd()}/screenshots`, _isCI);
 		this._dpr = options && options.dpr ? options.dpr : 2;
 		this._tolerance = options && options.tolerance ? options.tolerance : 0;
 		this._updateError = false;
