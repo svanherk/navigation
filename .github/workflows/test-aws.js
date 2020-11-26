@@ -47,7 +47,7 @@ const getBucketContents = async () => {
             }
             else {
                 process.stdout.write('we did it');
-                resolve(data.Contents);
+                resolve(data.Contents[0]);
             }
             });
     });
@@ -56,7 +56,7 @@ const getBucketContents = async () => {
 process.stdout.write('starting');
 
 getBucketContents().then((results) => {
-    process.stdout.write(results.toString());
+    process.stdout.write(JSON.stringify(results));
 }).catch((err) => {
     process.stdout.write(err.toString());
 });
