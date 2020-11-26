@@ -64,7 +64,7 @@ class FileHelper {
 	}
 
 	getCurrentTarget() {
-		return this.isCI ? this.s3.currentConfig.target : this.currentDir;
+		return this.isCI ? this.s3.target : this.currentDir;
 	}
 
 	getDiffImageBase64(name) {
