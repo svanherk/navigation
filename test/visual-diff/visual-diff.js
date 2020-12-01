@@ -7,6 +7,8 @@ const FileHelper = require('./file-helper.js');
 const fs = require('fs');
 
 const _isCI = process.env['CI'] ? true : false;
+const _isLocalTestRun = !_isCI && !process.argv.includes('--golden');
+const _isLocalGoldenUpdate = !_isCI && process.argv.includes('--golden');
 const _serverOptions = esDevServer.createConfig({ babel: true, nodeResolve: true, dedupe: true });
 
 let _baseUrl;
@@ -52,7 +54,6 @@ class VisualDiff {
 		this._fs = new FileHelper(name, `${dir ? dir : process.cwd()}/screenshots`, _isCI);
 		this._dpr = options && options.dpr ? options.dpr : 2;
 		this._tolerance = options && options.tolerance ? options.tolerance : 0;
-		this._updateError = false;
 
 		let currentTarget, goldenTarget;
 
@@ -68,18 +69,38 @@ class VisualDiff {
 
 			process.stdout.write(`\n${chalk.yellow('    Golden:')} ${goldenTarget}\n\n`);
 
+			if (_isLocalTestRun) {
+				// fail fast if no goldens
+				const goldenFiles = await this._fs.getGoldenFiles();
+				if (goldenFiles.length === 0) {
+					process.stdout.write(`\n${chalk.red('No goldens!  Did you forget to generate them?')}\n${goldenTarget}\n\n`);
+					process.exit(1);
+				}
+			}
+
+		});
+
+		beforeEach(() => {
+			this._updateGolden = false;
+			this._updateError = false;
 		});
 
 		afterEach(() => {
 			if (this._updateError) {
-				process.stdout.write(chalk.bold.red(`      [Attention: ${chalk.yellow('Golden')} update failed!]`));
+				process.stdout.write(chalk.bold.red(`      [Attention: ${chalk.yellow('Golden')} update failed!]\n`));
+			} else if (this._updateGolden && _isLocalGoldenUpdate) {
+				process.stdout.write(chalk.green(`      [Golden updated successfully.]\n`));
+			} else if (_isLocalGoldenUpdate) {
+				process.stdout.write(chalk.grey(`      [Golden already up to date.]\n`));
 			}
 		});
 
 		after(async() => {
 			const reportName = this._fs.getReportFileName();
 
-			await this._deleteGoldenOrphans();
+			if (!_isLocalTestRun) {
+				await this._deleteGoldenOrphans();
+			}
 
 			try {
 				await this._generateHtml(reportName, this._results);
@@ -119,7 +140,7 @@ class VisualDiff {
 		const currentImageBase64 = await this._fs.getCurrentImageBase64(name);
 		const goldenImageBase64 = await this._fs.getGoldenImageBase64(name);
 
-		let pixelsDiff, diffImageBase64, updateGolden = false;
+		let pixelsDiff, diffImageBase64 = false;
 
 		if (goldenImage && currentImage.width === goldenImage.width && currentImage.height === goldenImage.height) {
 			const diff = new PNG({ width: currentImage.width, height: currentImage.height });
@@ -127,26 +148,23 @@ class VisualDiff {
 				currentImage.data, goldenImage.data, diff.data, currentImage.width, currentImage.height, { threshold: this._tolerance }
 			);
 			if (pixelsDiff !== 0) {
-				updateGolden = true;
+				this._updateGolden = true;
 				await this._fs.writeCurrentStream(`${name}-diff`, diff.pack());
 				diffImageBase64 = await this._fs.getDiffImageBase64(`${name}-diff`);
 			}
 		} else {
-			updateGolden = true;
+			this._updateGolden = true;
 		}
 
-		if (updateGolden) {
+		if (this._updateGolden && !_isLocalTestRun) {
 			this._hasTestFailures = true;
 			const result = await this._fs.updateGolden(name);
 			if (result) {
-				this._updateError = false;
 				_goldenUpdateCount++;
 			} else {
 				this._updateError = true;
 				_goldenErrorCount++;
 			}
-		} else {
-			this._updateError = false;
 		}
 
 		this._results.push({
@@ -156,11 +174,12 @@ class VisualDiff {
 			diff: { pixelsDiff: pixelsDiff, base64Image: (pixelsDiff > 0 ? diffImageBase64 : null) },
 		});
 
-		expect(goldenImage !== null, 'golden exists').equal(true);
-		expect(currentImage.width, 'image widths are the same').equal(goldenImage.width);
-		expect(currentImage.height, 'image heights are the same').equal(goldenImage.height);
-		expect(pixelsDiff, 'number of different pixels').equal(0);
-
+		if (!_isLocalGoldenUpdate) {
+			expect(goldenImage !== null, 'golden exists').equal(true);
+			expect(currentImage.width, 'image widths are the same').equal(goldenImage.width);
+			expect(currentImage.height, 'image heights are the same').equal(goldenImage.height);
+			expect(pixelsDiff, 'number of different pixels').equal(0);
+		}
 	}
 
 	async _deleteGoldenOrphans() {
@@ -210,11 +229,13 @@ class VisualDiff {
 			if (image) return createImageHtml('Golden', image);
 			else return createNoImageHtml('Golden', defaultImage, 'No golden.');
 		};
-		const createDiffHtml = (diff, defaultImage) => {
+		const createDiffHtml = (diff, defaultImage, goldenImage) => {
 			if (diff.pixelsDiff === 0) {
 				return createNoImageHtml('Difference (0px)', defaultImage, 'Images match.');
 			} else if (diff.pixelsDiff > 0) {
 				return createArtifactHtml('Difference', `${diff.pixelsDiff / this._dpr}px`, `<img src="data:image/png;base64,${diff.base64Image}" style="width: ${defaultImage.width / this._dpr}px; height: ${defaultImage.height / this._dpr}px;" alt="Difference" />`);
+			} else if (goldenImage) {
+				return createNoImageHtml('Difference', defaultImage, 'Images are not the same size.');
 			} else {
 				return createNoImageHtml('Difference', defaultImage, 'No image.');
 			}
@@ -245,7 +266,7 @@ class VisualDiff {
 				<div class="compare">
 					${createCurrentHtml(result.current)}
 					${createGoldenHtml(result.golden, result.current)}
-					${createDiffHtml(result.diff, result.current)}
+					${createDiffHtml(result.diff, result.current, result.golden)}
 				</div>`;
 		}).join('\n');
 
