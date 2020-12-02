@@ -43,56 +43,53 @@ class S3Helper {
 	}
 
 	async uploadFile(filePath) {
-		const promise = new Promise(async(resolve, reject) => {
+		const getContentType = (filePath) => {
+			if (filePath.endsWith('.html')) return 'text/html';
+			if (filePath.endsWith('.png')) return 'image/png';
+			return;
+		};
 
-			const getContentType = (filePath) => {
-				if (filePath.endsWith('.html')) return 'text/html';
-				if (filePath.endsWith('.png')) return 'image/png';
-				return;
-			};
+		if(!_s3Config) {
+			try {
+				console.log('getting creds');
+				_s3Config = await getS3Creds();
+				_s3Config.apiVersion = 'latest';
+				_s3Config.region = 'ca-central-1';
+			} catch(err) {
+				process.stdout.write(`\n${chalk.red(err.toString())}`);
+			}	
+		}
+		console.log('creating s3');
+		const s3 = new AWS.S3(_s3Config);
+			
+		const params = {
+			ACL: 'public-read',
+			Body: '',
+			Bucket: this.target,
+			ContentDisposition: 'inline',
+			ContentType: getContentType(filePath),
+			Key: ''
+		};
 
-			if(!_s3Config) {
-				try {
-					console.log('getting creds');
-					_s3Config = await getS3Creds();
-					_s3Config.apiVersion = 'latest';
-					_s3Config.region = 'ca-central-1';
-				} catch(err) {
-					process.stdout.write(`\n${chalk.red(err.toString())}`);
-				}	
-			}
-			console.log('creating s3');
-			const s3 = new AWS.S3(_s3Config);
-				
-			const params = {
-				ACL: 'public-read',
-				Body: '',
-				Bucket: this.target,
-				ContentDisposition: 'inline',
-				ContentType: getContentType(filePath),
-				Key: ''
-			};
+		const fileStream = fs.createReadStream(filePath);
 
-			const fileStream = fs.createReadStream(filePath);
-
-			fileStream.on('error', function(err) {
-				process.stdout.write(`\n${chalk.red(err)}`);
-				reject(err);
-			});
-			params.Body = fileStream;
-			params.Key = path.basename(filePath);
-
-			s3.upload(params, function(err, data) {
-				if (err) {
-					process.stdout.write(`\n${chalk.red(err)}`);
-					reject(err);
-				}
-				if (data) {
-					resolve(data);
-				}
-			});
+		fileStream.on('error', function(err) {
+			process.stdout.write(`\n${chalk.red(err)}`);
+			return Promise.reject(err);
 		});
-		return promise;
+		params.Body = fileStream;
+		params.Key = path.basename(filePath);
+
+		s3.upload(params, function(err, data) {
+			if (err) {
+				process.stdout.write(`\n${chalk.red(err)}`);
+				return Promise.reject(err);
+			}
+			if (data) {
+				return Promise.resolve(data);
+			}
+		});
+
 	}
 
 }
