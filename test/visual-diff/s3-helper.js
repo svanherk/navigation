@@ -57,6 +57,7 @@ class S3Helper {
 				_s3Config.region = 'ca-central-1';
 			} catch(err) {
 				process.stdout.write(`\n${chalk.red(err.toString())}`);
+				return Promise.reject(err);
 			}	
 		}
 		console.log('creating s3');
