@@ -181,8 +181,7 @@ class FileHelper {
 		const filePath = this.getCurrentPath(name);
 		fs.writeFileSync(filePath, content);
 		if (this.isCI) {
-			const result = await this.s3.uploadFile(filePath);
-			console.log(result);
+			await this.s3.uploadFile(filePath);
 		}
 	}
 
