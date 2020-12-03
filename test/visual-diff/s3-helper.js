@@ -82,11 +82,13 @@ class S3Helper {
 		params.Key = path.basename(filePath);
 
 		s3.upload(params, function(err, data) {
+			console.log('here');
 			if (err) {
 				process.stdout.write(`\n${chalk.red(err)}`);
 				Promise.reject(err);
 			}
 			if (data) {
+				console.log(data);
 				Promise.resolve(data);
 			}
 		});
