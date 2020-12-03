@@ -180,7 +180,10 @@ class FileHelper {
 		if (!name || name.length === 0 || !content || content.length === 0) return;
 		const filePath = this.getCurrentPath(name);
 		fs.writeFileSync(filePath, content);
-		if (this.isCI) await this.s3.uploadFile(filePath);
+		if (this.isCI) {
+			const result = await this.s3.uploadFile(filePath);
+			console.log(result);
+		}
 	}
 
 }
