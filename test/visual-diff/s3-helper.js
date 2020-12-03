@@ -57,7 +57,7 @@ class S3Helper {
 				_s3Config.region = 'ca-central-1';
 			} catch(err) {
 				process.stdout.write(`\n${chalk.red(err.toString())}`);
-				Promise.reject(err);
+				return Promise.reject(err);
 			}	
 		}
 		console.log('creating s3');
@@ -74,21 +74,19 @@ class S3Helper {
 
 		const fileStream = fs.createReadStream(filePath);
 
-		fileStream.on('error', function(err) {
+		fileStream.on('error', (err) => {
 			process.stdout.write(`\n${chalk.red(err)}`);
 			Promise.reject(err);
 		});
 		params.Body = fileStream;
 		params.Key = path.basename(filePath);
 
-		return s3.upload(params, function(err, data) {
-			console.log('here');
+		return s3.upload(params, (err, data) => {
 			if (err) {
 				process.stdout.write(`\n${chalk.red(err)}`);
 				Promise.reject(err);
 			}
 			if (data) {
-				console.log(data);
 				Promise.resolve(data);
 			}
 		});
