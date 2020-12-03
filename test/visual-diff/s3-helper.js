@@ -81,7 +81,7 @@ class S3Helper {
 		params.Body = fileStream;
 		params.Key = path.basename(filePath);
 
-		s3.upload(params, function(err, data) {
+		return s3.upload(params, function(err, data) {
 			console.log('here');
 			if (err) {
 				process.stdout.write(`\n${chalk.red(err)}`);
