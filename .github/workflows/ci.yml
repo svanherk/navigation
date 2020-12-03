@@ -31,7 +31,7 @@ jobs:
       - name: Run Visual Diff
         uses: svanherk/test-action/visual-diff@main
         with:
-          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_ID }}
+          AWS_ACCESS_KEY_ID: 'test'
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_SECRET }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
