@@ -83,23 +83,27 @@ class S3Helper {
 			Key: ''
 		};
 
-		const fileStream = fs.createReadStream(filePath);
+		return new Promise((resolve, reject) => {
 
-		fileStream.on('error', (err) => {
-			process.stdout.write(`\n${chalk.red(err)}`);
-			Promise.reject(err);
-		});
-		params.Body = fileStream;
-		params.Key = path.basename(filePath);
+			const fileStream = fs.createReadStream(filePath);
 
-		return s3.upload(params, (err, data) => {
-			if (err) {
+			fileStream.on('error', (err) => {
 				process.stdout.write(`\n${chalk.red(err)}`);
-				Promise.reject(err);
-			}
-			if (data) {
-				Promise.resolve(data);
-			}
+				reject(err);
+			});
+			params.Body = fileStream;
+			params.Key = path.basename(filePath);
+
+			s3.upload(params, (err, data) => {
+				if (err) {
+					process.stdout.write(`\n${chalk.red(err)}`);
+					reject(err);
+				}
+				if (data) {
+					resolve(data);
+				}
+			});
+
 		});
 
 	}

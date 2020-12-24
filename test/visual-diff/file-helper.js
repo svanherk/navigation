@@ -159,6 +159,7 @@ class FileHelper {
 
 	updateGolden(name) {
 		if (!fs.existsSync(this.getCurrentPath(name))) return false;
+		console.log(this.getGoldenPath(name));
 		fs.copyFileSync(this.getCurrentPath(name), this.getGoldenPath(name));
 		return true;
 	}
