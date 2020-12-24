@@ -7,7 +7,6 @@ import { navigationSharedStyle } from './d2l-navigation-shared-styles';
 `d2l-navigation-band`
 Polymer-based web component for a solid colour band that runs along the top of the navigational header
 
-@demo demo/navigation-band.html
 */
 class D2LNavigationBand extends PolymerElement {
 
