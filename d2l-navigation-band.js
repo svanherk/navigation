@@ -6,8 +6,6 @@ import { navigationSharedStyle } from './d2l-navigation-shared-styles';
 /**
 `d2l-navigation-band`
 Polymer-based web component for a solid colour band that runs along the top of the navigational header
-
-@demo demo/navigation-band.html
 */
 class D2LNavigationBand extends PolymerElement {
 
@@ -28,7 +26,7 @@ class D2LNavigationBand extends PolymerElement {
 		${navigationSharedStyle}
 		<style>
 			:host {
-				background: linear-gradient(180deg, var(--d2l-branding-primary-color, var(--d2l-color-cinnabar)) var(--d2l-navigation-band-slot-height, 1.5rem), #ffffff 0%);
+				background: linear-gradient(180deg, var(--d2l-branding-primary-color, var(--d2l-color-celestine)) var(--d2l-navigation-band-slot-height, 1.5rem), #ffffff 0%);
 				display: block;
 				min-height: 8px;
 				position: relative; /* Needed for Firefox */
