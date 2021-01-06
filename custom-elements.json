@@ -1,0 +1,215 @@
+{
+  "version": "experimental",
+  "tags": [
+    {
+      "name": "d2l-navigation-iterator-item",
+      "path": "./components/d2l-navigation-iterator/d2l-navigation-iterator-item.js",
+      "attributes": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "text",
+          "type": "string",
+          "default": "\"\""
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "default": "\"previous\""
+        },
+        {
+          "name": "locale",
+          "type": "string"
+        }
+      ],
+      "properties": [
+        {
+          "name": "disabled",
+          "attribute": "disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "hideText",
+          "attribute": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "text",
+          "attribute": "text",
+          "type": "string",
+          "default": "\"\""
+        },
+        {
+          "name": "type",
+          "attribute": "type",
+          "type": "string",
+          "default": "\"previous\""
+        },
+        {
+          "name": "locale",
+          "attribute": "locale",
+          "type": "string"
+        },
+        {
+          "name": "resources",
+          "type": "object",
+          "default": "{\"en\":\"en\",\"ar\":\"ar\",\"da-dk\":\"dadk\",\"de\":\"de\",\"es\":\"es\",\"fi\":\"fi\",\"fr\":\"fr\",\"fr-fr\":\"frfr\",\"ja\":\"ja\",\"ko\":\"ko\",\"nl\":\"nl\",\"pt\":\"pt\",\"sv\":\"sv\",\"tr\":\"tr\",\"zh\":\"zh\",\"zh-tw\":\"zhtw\"}"
+        }
+      ]
+    },
+    {
+      "name": "d2l-navigation-iterator",
+      "path": "./components/d2l-navigation-iterator/d2l-navigation-iterator.js",
+      "attributes": [
+        {
+          "name": "previous-text",
+          "type": "string"
+        },
+        {
+          "name": "next-text",
+          "type": "string"
+        },
+        {
+          "name": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "previous-disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "next-disabled",
+          "type": "boolean",
+          "default": "false"
+        }
+      ],
+      "properties": [
+        {
+          "name": "previousText",
+          "attribute": "previous-text",
+          "type": "string"
+        },
+        {
+          "name": "nextText",
+          "attribute": "next-text",
+          "type": "string"
+        },
+        {
+          "name": "hideText",
+          "attribute": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "previousDisabled",
+          "attribute": "previous-disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "nextDisabled",
+          "attribute": "next-disabled",
+          "type": "boolean",
+          "default": "false"
+        }
+      ],
+      "events": [
+        {
+          "name": "previous-click"
+        },
+        {
+          "name": "next-click"
+        }
+      ]
+    },
+    {
+      "name": "d2l-navigation-link-iterator",
+      "path": "./components/d2l-navigation-iterator/d2l-navigation-link-iterator.js",
+      "attributes": [
+        {
+          "name": "previous-href",
+          "type": "string"
+        },
+        {
+          "name": "next-href",
+          "type": "string"
+        },
+        {
+          "name": "previous-text",
+          "type": "string"
+        },
+        {
+          "name": "next-text",
+          "type": "string"
+        },
+        {
+          "name": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "previous-disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "next-disabled",
+          "type": "boolean",
+          "default": "false"
+        }
+      ],
+      "properties": [
+        {
+          "name": "previousHref",
+          "attribute": "previous-href",
+          "type": "string"
+        },
+        {
+          "name": "nextHref",
+          "attribute": "next-href",
+          "type": "string"
+        },
+        {
+          "name": "previousText",
+          "attribute": "previous-text",
+          "type": "string"
+        },
+        {
+          "name": "nextText",
+          "attribute": "next-text",
+          "type": "string"
+        },
+        {
+          "name": "hideText",
+          "attribute": "hide-text",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "previousDisabled",
+          "attribute": "previous-disabled",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "nextDisabled",
+          "attribute": "next-disabled",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    }
+  ]
+}
