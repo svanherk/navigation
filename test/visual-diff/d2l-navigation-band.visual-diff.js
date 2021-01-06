@@ -23,8 +23,7 @@ describe('d2l-navigation-band', function() {
 	after(() => browser.close());
 
 	[
-		'base',
-		'head'
+		'base'
 	].forEach((testName) => {
 		it(testName, async function() {
 			const rect = await visualDiff.getRect(page, `#${testName}`);
