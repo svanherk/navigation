@@ -1,2 +1,3 @@
-*		@svanherk
-/screenshots/ci/golden/ @github-actions
+/screenshots/ci/golden/ @svanherk
+/screenshots/ci/golden/*.png @svanherk
+*/screenshots/ci/golden/ @svanherk
