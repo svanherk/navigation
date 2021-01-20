@@ -3,15 +3,15 @@ const chalk = require('chalk');
 const fs = require('fs');
 const path = require('path');
 
-const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
 let _s3Config;
 
 async function getS3Creds() {
-    return new Promise((resolve, reject) => {
-        const timestamp = (new Date()).getTime();
-        const params = {
-        	RoleArn: 'arn:aws:iam::661160317623:role/githubactions-visual-diff-testing',
-        	RoleSessionName: `visual-diff-${timestamp}`,
+	return new Promise((resolve, reject) => {
+		const timestamp = (new Date()).getTime();
+		const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/');
+		const params = {
+			RoleArn: 'arn:aws:iam::661160317623:role/githubactions-visual-diff-testing',
+			RoleSessionName: `visual-diff-${timestamp}`,
 			Tags: [
 				{
 					Key: 'Org',
@@ -23,11 +23,9 @@ async function getS3Creds() {
 				}
 			]
 		};
-		console.log(params.RoleSessionName);
-		console.log(params.Tags[0].Value);
-		console.log(params.Tags[1].Value);
-        const sts = new AWS.STS();
-        sts.assumeRole(params, (err, data) => {
+
+		const sts = new AWS.STS();
+		sts.assumeRole(params, (err, data) => {
 			if (err) {
 				process.stdout.write(`\n${chalk.red(err.toString())}`);
 				reject(err);
@@ -36,21 +34,27 @@ async function getS3Creds() {
 				resolve({
 					accessKeyId: data.Credentials.AccessKeyId,
 					secretAccessKey: data.Credentials.SecretAccessKey,
-					sessionToken: data.Credentials.SessionToken,
+					sessionToken: data.Credentials.SessionToken
 				});
 			}
-        });
-    });
+		});
+	});
 }
 
 class S3Helper {
 
 	constructor(name) {
-		this.target = `visualdiff.gaudi.d2l/screenshots/${repo}/${name}`;
+		this.name = name;
 	}
 
 	getCurrentBaseUrl() {
-		return `https://s3.ca-central-1.amazonaws.com/${this.target}/`;
+		return `https://s3.ca-central-1.amazonaws.com/${this.getTarget()}/`;
+	}
+
+	getTarget() {
+		const fullRepo = process.env['GITHUB_REPOSITORY'];
+		const target = `visualdiff.gaudi.d2l/screenshots/${fullRepo}/${this.name}`;
+		return target;
 	}
 
 	async uploadFile(filePath) {
@@ -60,31 +64,28 @@ class S3Helper {
 			return;
 		};
 
-		if(!_s3Config) {
+		if (!_s3Config) {
 			try {
-				console.log('getting creds');
 				_s3Config = await getS3Creds();
 				_s3Config.apiVersion = 'latest';
 				_s3Config.region = 'ca-central-1';
-			} catch(err) {
+			} catch (err) {
 				process.stdout.write(`\n${chalk.red(err.toString())}`);
 				return Promise.reject(err);
-			}	
+			}
 		}
-		console.log('creating s3');
+
 		const s3 = new AWS.S3(_s3Config);
-			
 		const params = {
 			ACL: 'public-read',
 			Body: '',
-			Bucket: this.target,
+			Bucket: this.getTarget(),
 			ContentDisposition: 'inline',
 			ContentType: getContentType(filePath),
 			Key: ''
 		};
 
 		return new Promise((resolve, reject) => {
-
 			const fileStream = fs.createReadStream(filePath);
 
 			fileStream.on('error', (err) => {
@@ -103,9 +104,7 @@ class S3Helper {
 					resolve(data);
 				}
 			});
-
 		});
-
 	}
 
 }
