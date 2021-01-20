@@ -45,10 +45,10 @@ class VisualDiff {
 	constructor(name, dir, options) {
 
 		if (_testNames.includes(name)) {
-            process.stdout.write(chalk.red(`\nDuplicate name key: ${name}.  VisualDiff configuration requires a unique name.\n`));
-            process.exit(1);
-        }
-        _testNames.push(name);
+			process.stdout.write(chalk.red(`\nDuplicate name key: ${name}.  VisualDiff configuration requires a unique name.\n`));
+			process.exit(1);
+		}
+		_testNames.push(name);
 
 		this.createPage = require('./helpers/createPage');
 		this.disableAnimations = require('./helpers/disableAnimations');
@@ -84,7 +84,6 @@ class VisualDiff {
 					process.exit(1);
 				}
 			}
-
 		});
 
 		beforeEach(() => {
@@ -96,9 +95,9 @@ class VisualDiff {
 			if (this._updateError) {
 				process.stdout.write(chalk.bold.red(`      [Attention: ${chalk.yellow('Golden')} update failed!]\n`));
 			} else if (this._updateGolden && _isLocalGoldenUpdate) {
-				process.stdout.write(chalk.green(`      [Golden updated successfully.]\n`));
+				process.stdout.write(chalk.green('      [Golden updated successfully.]\n'));
 			} else if (_isLocalGoldenUpdate) {
-				process.stdout.write(chalk.grey(`      [Golden already up to date.]\n`));
+				process.stdout.write(chalk.grey('      [Golden already up to date.]\n'));
 			}
 		});
 
@@ -122,7 +121,6 @@ class VisualDiff {
 			} catch (error) {
 				process.stdout.write(`\n${chalk.red(`Could not generate report: ${error}`)}`);
 			}
-
 		});
 
 	}
@@ -147,7 +145,7 @@ class VisualDiff {
 		const currentImageBase64 = await this._fs.getCurrentImageBase64(name);
 		const goldenImageBase64 = await this._fs.getGoldenImageBase64(name);
 
-		let pixelsDiff, diffImageBase64 = false;
+		let pixelsDiff, diffImageBase64;
 
 		if (goldenImage && currentImage.width === goldenImage.width && currentImage.height === goldenImage.height) {
 			const diff = new PNG({ width: currentImage.width, height: currentImage.height });
@@ -253,7 +251,7 @@ class VisualDiff {
 			const workflow = process.env['GITHUB_WORKFLOW'];
 			const runNum = process.env['GITHUB_RUN_NUMBER'];
 			const pr = /refs\/pull\/(\d+)\/merge/g.exec(process.env['GITHUB_REF']);
-			const prNum = pr && pr[1] ? pr[1] : null; 
+			const prNum = pr && pr[1] ? pr[1] : null;
 			const prUrl = `${process.env['GITHUB_SERVER_URL']}/${process.env['GITHUB_REPOSITORY']}/pull/${prNum}`;
 			const branch = process.env['GITHUB_REF'];
 			const sha = process.env['GITHUB_SHA'];
@@ -265,7 +263,6 @@ class VisualDiff {
 					<div>By ${actor}</div>
 				</div>`;
 		};
-
 		const diffHtml = results.map((result) => {
 
 			return `
