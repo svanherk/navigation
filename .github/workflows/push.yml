@@ -1,0 +1,40 @@
+  
+
+name: Push
+
+on: 
+  workflow_dispatch: # manual trigger
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    # self-hosted doesn't work for public repos (security), so need to use ubuntu
+    runs-on: ubuntu-latest
+    
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout Repository
+        uses: Brightspace/third-party-actions@actions/checkout
+
+      - name: Use Node.js
+        uses: Brightspace/third-party-actions@actions/setup-node
+          
+      - name: Install Dependencies
+        run: npm i
+        
+      - name: AWS Caller
+        run: aws sts get-caller-identity
+
+      - name: Run Visual Diff
+        uses: svanherk/test-action/visual-diff@main
+        with:
+          TEST_PATH: './**/*.visual-diff-2.js'
+          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Done
+        run: git diff
