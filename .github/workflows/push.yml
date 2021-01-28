@@ -27,6 +27,9 @@ jobs:
         
       - name: AWS Caller
         run: aws sts get-caller-identity
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_SECRET }}
 
       - name: Run Visual Diff
         uses: svanherk/test-action/visual-diff@main
