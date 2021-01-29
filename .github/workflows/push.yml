@@ -23,7 +23,7 @@ jobs:
         uses: Brightspace/third-party-actions@actions/setup-node
           
       - name: Install Dependencies
-        run: npm i
+        run: echo "npm i"
       
       - name: Install ko
         run: |
