@@ -27,8 +27,7 @@ jobs:
       
       - name: Install ko
         run: |
-          sudo apt-get install language-pack-ko
-          sudo apt-get install korean*
+          sudo apt-get install fonts-nanum
         
       - name: AWS Caller
         run: aws sts get-caller-identity
