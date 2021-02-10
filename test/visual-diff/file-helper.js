@@ -159,7 +159,6 @@ class FileHelper {
 
 	updateGolden(name) {
 		if (!fs.existsSync(this.getCurrentPath(name))) return false;
-		console.log(this.getGoldenPath(name));
 		fs.copyFileSync(this.getCurrentPath(name), this.getGoldenPath(name));
 		return true;
 	}
@@ -181,9 +180,7 @@ class FileHelper {
 		if (!name || name.length === 0 || !content || content.length === 0) return;
 		const filePath = this.getCurrentPath(name);
 		fs.writeFileSync(filePath, content);
-		if (this.isCI) {
-			await this.s3.uploadFile(filePath);
-		}
+		if (this.isCI) await this.s3.uploadFile(filePath);
 	}
 
 }
